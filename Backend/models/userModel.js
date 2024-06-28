@@ -1,35 +1,38 @@
-const { sql, poolPromise } = require("../config/db");
+const pool = require("../config/db");
 const bcrypt = require("bcryptjs");
 
 const findUserByEmail = async (email) => {
-  try {
-    const pool = await poolPromise;
-    const result = await pool
-      .request()
-      .input("Email", sql.NVarChar, email)
-      .query("SELECT * FROM Users WHERE Email = @Email");
-
-    return result.recordset[0]; // Return the first matching user if found
-  } catch (err) {
-    throw new Error("Error finding user by email: " + err.message);
-  }
+  return new Promise((resolve, reject) => {
+    pool.query(
+      "SELECT * FROM Users WHERE Email = ?",
+      [email],
+      (err, results) => {
+        if (err) {
+          reject(new Error("Error finding user by email: " + err.message));
+        } else {
+          resolve(results[0]); // Return the first matching user if found
+        }
+      }
+    );
+  });
 };
 
 const createUser = async (user) => {
   try {
-    const pool = await poolPromise;
     const hashedPassword = await bcrypt.hash(user.password, 8);
-    await pool
-      .request()
-      .input("Email", sql.NVarChar, user.email)
-      .input("Password", sql.NVarChar, hashedPassword)
-      .input("Name", sql.NVarChar, user.name)
-      .input("PhoneNumber", sql.NVarChar, user.phoneNumber)
-      .query(
-        "INSERT INTO Users (Email, Password, Name, PhoneNumber) VALUES (@Email, @Password, @Name, @PhoneNumber)"
+    return new Promise((resolve, reject) => {
+      pool.query(
+        "INSERT INTO Users (Email, Password, Name, PhoneNumber) VALUES (?, ?, ?, ?)",
+        [user.email, hashedPassword, user.name, user.phoneNumber],
+        (err, results) => {
+          if (err) {
+            reject(new Error("Error creating user: " + err.message));
+          } else {
+            resolve({ message: "User created successfully" });
+          }
+        }
       );
-
-    return { message: "User created successfully" };
+    });
   } catch (err) {
     throw new Error("Error creating user: " + err.message);
   }

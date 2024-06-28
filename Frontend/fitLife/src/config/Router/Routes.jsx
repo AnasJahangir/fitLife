@@ -4,6 +4,8 @@ import LandingLayouts from "../Layout/LandingLayouts";
 import Home from "../../pages/Home";
 import RegisterForm from "../../pages/Register";
 import Login from "../../pages/Login";
+import AdminLogin from "../../pages/AdminLogin";
+
 
 function MyRoutes() {
   return (
@@ -12,6 +14,7 @@ function MyRoutes() {
         <Route path="/" element={<LandingLayouts component={Home} />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/admin" element={<AdminLogin />} />
 
         <Route path="*" element={<Navigate to={"/"} replace />} />
       </Routes>
