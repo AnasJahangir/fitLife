@@ -2,8 +2,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
-const adminRoutes = require('./routes/adminRoutes');
-const adminService = require('./services/adminService');
+const adminRoutes = require("./routes/adminRoutes");
+const productRoutes = require("./routes/productRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
+
+const adminService = require("./services/adminService");
 
 const errorMiddleware = require("./middleware/errorMiddleware");
 
@@ -13,7 +16,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use("/api", userRoutes);
-app.use('/api/admin', adminRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/products", productRoutes);
+app.use("/categories", categoryRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is running");
