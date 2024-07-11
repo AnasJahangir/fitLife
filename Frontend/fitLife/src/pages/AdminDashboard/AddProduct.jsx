@@ -1,9 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
 
 function AddProduct() {
+  const [productName, setProductName] = useState("");
+  const [price, setPrice] = useState("");
+  const [category, setCategory] = useState("");
+  const [featured, setFeatured] = useState(false);
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [error, setError] = useState("");
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setError("Please upload an image file.");
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        setError("Image size should be less than 2MB.");
+        return;
+      }
+      setError("");
+      setImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!productName || !price || !category) {
+      setError("All fields are required.");
+      return;
+    }
+    if (!image) {
+      setError("Image upload is required.");
+      return;
+    }
+    setError("");
+    // Form submission logic here
+    console.log({ productName, price, category, featured, image });
+  };
+
   return (
     <div>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="grid gap-6 mb-6 md:grid-cols-2">
           <div>
             <div>
@@ -16,7 +60,9 @@ function AddProduct() {
               <input
                 type="text"
                 id="ProductName"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400  "
+                value={productName}
+                onChange={(e) => setProductName(e.target.value)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                 placeholder="Product Name"
                 required
               />
@@ -33,44 +79,53 @@ function AddProduct() {
                 <input
                   type="text"
                   id="Price"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5  dark:border-gray-600 dark:placeholder-gray-400  "
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                   required
                 />
               </div>
 
               <div>
                 <label
-                  for="Category"
-                  class="block mb-2 text-sm font-medium text-gray-900 "
+                  htmlFor="Category"
+                  className="block mb-2 text-sm font-medium text-gray-900 "
                 >
                   Category
                 </label>
                 <select
                   id="Category"
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:placeholder-gray-400 "
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                  required
                 >
-                  <option selected disabled>
+                  <option value="" disabled>
                     Choose a Category
                   </option>
+                  <option value="Category1">Category 1</option>
+                  <option value="Category2">Category 2</option>
                 </select>
               </div>
             </div>
+
             <div className="flex items-center">
               <input
-                defaultChecked
-                id="checked-checkbox"
+                id="featured"
                 type="checkbox"
-                defaultValue
-                className="w-4 h-4  bg-gray-100 border-gray-300 rounded   dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                checked={featured}
+                onChange={(e) => setFeatured(e.target.checked)}
+                className="w-4 h-4 bg-gray-100 border-gray-300 rounded dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               />
               <label
-                htmlFor="checked-checkbox"
+                htmlFor="featured"
                 className="ms-2 text-sm font-medium text-black"
               >
-                featured
+                Featured
               </label>
             </div>
           </div>
+
           <div>
             <label
               className="block mb-2 text-sm font-medium text-gray-900 "
@@ -79,13 +134,23 @@ function AddProduct() {
               Upload image
             </label>
             <input
-              className="block w-full text-sm text-gray-900 border  rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 p-3"
+              className="block w-full text-sm border rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:placeholder-gray-400 p-3"
               aria-describedby="user_avatar_help"
               id="user_avatar"
               type="file"
+              onChange={handleImageUpload}
+              required
             />
+            {imagePreview && (
+              <img
+                src={imagePreview}
+                alt="Image Preview"
+                className="mt-4 w-full h-64 object-cover rounded-lg"
+              />
+            )}
           </div>
         </div>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
         <button
           type="submit"
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
