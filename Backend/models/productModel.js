@@ -5,7 +5,7 @@ const createProduct = async (product) => {
     pool.query(
       "INSERT INTO Products (title, description, featured, imageUrl, price) VALUES (?, ?, ?, ?, ?)",
       [
-        product.title,
+        product.productName,
         product.description,
         product.featured,
         product.imageUrl,

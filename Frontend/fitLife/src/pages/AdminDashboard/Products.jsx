@@ -11,7 +11,7 @@ function Products() {
             to={"/admin/dashboard/add-product"}
             className="text-white bg-black  focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-2 py-2 text-center"
           >
-            Add product
+            Add Product
           </Link>
         </div>
       </div>

@@ -1,8 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/images/logo.png";
 const AdminLogin = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    document.title = "Admin Login";
+    const adminToken = localStorage.getItem("AdminToken");
+    if (adminToken) {
+      navigate("/admin/dashboard");
+    }
+  });
   const [formData, setFormData] = useState({
     text: "",
     password: "",
@@ -53,8 +61,8 @@ const AdminLogin = () => {
       );
 
       console.log("API Response:", response.data);
-
-      // Handle successful sign-in (e.g., redirect user)
+      localStorage.setItem("AdminToken", response.data.token);
+      navigate("/admin/dashboard");
     } catch (error) {
       // Handle error responses (e.g., display error message)
       console.error("API Error:", error);

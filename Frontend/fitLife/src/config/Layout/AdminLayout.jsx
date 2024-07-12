@@ -1,9 +1,9 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { Navigate, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 function AdminLayout({ children }) {
   const location = useLocation();
-
+  const navigate = useNavigate();
   const linkClasses = (path) =>
     `flex items-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-black hover:text-white group  transition duration-75 ${
       location.pathname === path ? "bg-black text-white" : "text-gray-900"
@@ -15,6 +15,10 @@ function AdminLayout({ children }) {
         ? "bg-black text-white"
         : "text-gray-900"
     }`;
+  const logout = () => {
+    localStorage.removeItem("AdminToken");
+    navigate("/admin");
+  };
   return (
     <div>
       <button
@@ -142,6 +146,33 @@ function AdminLayout({ children }) {
                 </svg>
                 <span className="flex-1 ms-3 whitespace-nowrap">Sign Up</span>
               </NavLink>
+            </li>
+            <li>
+              <span
+                className={`${linkClasses("/admin/dashboard")} cursor-pointer`}
+                onClick={logout}
+              >
+                <svg
+                  className="flex-shrink-0 w-5 h-5 "
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  classname="w-6 h-6"
+                >
+                  <path
+                    fillrule="evenodd"
+                    d="M7 3a1 1 0 00-1 1v4a1 1 0 102 0V5h8v14H8v-3a1 1 0 10-2 0v4a1 1 0 001 1h10a1 1 0 001-1V4a1 1 0 00-1-1H7z"
+                    cliprule="evenodd"
+                  />
+                  <path
+                    fillrule="evenodd"
+                    d="M3.293 12.707a1 1 0 010-1.414l3-3a1 1 0 011.414 1.414L6.414 11H13a1 1 0 110 2H6.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3z"
+                    cliprule="evenodd"
+                  />
+                </svg>
+
+                <span className="flex-1 ms-3 whitespace-nowrap">Log Out</span>
+              </span>
             </li>
           </ul>
         </div>

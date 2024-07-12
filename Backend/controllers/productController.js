@@ -1,20 +1,28 @@
 const productService = require("../services/productService");
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
-
 const createProduct = async (req, res) => {
   try {
-    const { title, description, featured, imageUrl, price } = req.body;
+    const { productName, price, category, featured } = req.body;
+
+    // Ensure the file is present
+    if (!req.file) {
+      return res.status(400).json({ error: "Image file is required." });
+    }
+
+    // Access the uploaded file path
     const imagePath = req.file.path;
+
+    // Create the product with the provided details and image path
     const createdProduct = await productService.createProduct(
-      { title, description, featured, imageUrl, price },
+      { productName, price, category, featured },
       imagePath
     );
+
     res.status(201).json(createdProduct);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 const getProducts = async (req, res) => {
   try {

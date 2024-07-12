@@ -17,8 +17,8 @@ app.use(cors());
 
 app.use("/api", userRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/products", productRoutes);
-app.use("/categories", categoryRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/categories", categoryRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is running");
