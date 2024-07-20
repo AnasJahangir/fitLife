@@ -48,6 +48,7 @@ const createUser = async (user) => {
                       } else {
                         const user = results[0];
                         delete user.Password;
+                        console.log(user);
                         resolve(user);
                       }
                     }

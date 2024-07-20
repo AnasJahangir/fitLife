@@ -1,9 +1,17 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/images/logo.png";
+import { UserContext } from "../config/Context/UserContext";
 
 const RegisterForm = () => {
+  const { user, login } = useContext(UserContext);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, []);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -11,7 +19,6 @@ const RegisterForm = () => {
     confirmPassword: "",
     phoneNumber: "",
   });
-  const navigate = useNavigate();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -40,8 +47,8 @@ const RegisterForm = () => {
         confirmPassword: "",
         phoneNumber: "",
       });
-      // navigate("/login");
-      
+      login(response.data);
+      navigate("/");
     } catch (error) {
       console.error("Registration failed:", error);
       // Handle error as needed (display message to user, etc.)
