@@ -1,35 +1,36 @@
 const productService = require("../services/productService");
+
 const createProduct = async (req, res) => {
   try {
-    const { productName, price, category, featured } = req.body;
+    const { productName, price, category_id, featured } = req.body;
 
-    // Ensure the file is present
     if (!req.file) {
       return res.status(400).json({ error: "Image file is required." });
     }
 
-    // Access the uploaded file path
+    console.log("File received:", req.file); // Log file details
+
     const imagePath = req.file.path;
 
-    // Create the product with the provided details and image path
     const createdProduct = await productService.createProduct(
-      { productName, price, category, featured },
+      { productName, price, category_id, featured },
       imagePath
     );
 
     res.status(201).json(createdProduct);
   } catch (error) {
+    console.error("Error in createProduct:", error); // Log error details
     res.status(500).json({ error: error.message });
   }
 };
 
-
 const getProducts = async (req, res) => {
   try {
-    const { limit = 50, offset = 0 } = req.query;
+    const { limit = 50, offset = 0, categoryId } = req.query;
     const products = await productService.getProducts(
       parseInt(limit),
-      parseInt(offset)
+      parseInt(offset),
+      categoryId
     );
     res.status(200).json(products);
   } catch (error) {

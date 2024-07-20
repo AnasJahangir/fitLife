@@ -12,6 +12,7 @@ function AddProduct() {
   const [image, setImage] = useState(null);
   const [addcategory, setAddcategory] = useState(true);
   const [imagePreview, setImagePreview] = useState(null);
+  const [description, setDescription] = useState(null);
   const [error, setError] = useState("");
   const allCategory = async () => {
     try {
@@ -51,35 +52,39 @@ function AddProduct() {
     e.preventDefault();
     const token = localStorage.getItem("AdminToken"); // Retrieve the token from localStorage or any other secure storage
     if (!token) {
-      setError("You need to be authenticated to create a category.");
+      setError("You need to be authenticated.");
       return;
     }
     // Client-side validation
-    if (!productName || !price || !selectedCategory) {
+    if (!productName || !price || !selectedCategory || !description) {
       setError("All fields are required.");
       return;
     }
-
     // Check if price is a valid number
     if (isNaN(price) || price <= 0) {
       setError("Price must be a positive number.");
       return;
     }
 
-    if (!image) {
+    if (!image || !imagePreview) {
       setError("Image upload is required.");
       return;
     }
-
+    let featuredData = 0;
     setError("");
-
+    if (featured) {
+      featuredData = 1;
+    } else {
+      featuredData = 0;
+    }
     const formData = new FormData();
     formData.append("productName", productName);
     formData.append("price", price);
-    formData.append("category", selectedCategory);
+    formData.append("category_id", selectedCategory);
     formData.append("image", image);
-    formData.append("featured", featured);
-    console.log(productName, price, selectedCategory, image, featured);
+    formData.append("featured", featuredData);
+    formData.append("description", description);
+    console.log(productName, price, selectedCategory, image, featuredData);
     try {
       const response = await axios.post(
         "http://localhost:3000/api/products",
@@ -94,7 +99,6 @@ function AddProduct() {
       console.log(response);
       setProductName("");
       setPrice("");
-      setCategory("");
       setFeatured(false);
       setImage(null);
       setImagePreview(null);
@@ -154,6 +158,23 @@ function AddProduct() {
                 onChange={(e) => setProductName(e.target.value)}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                 placeholder="Product Name"
+                required
+              />
+            </div>
+
+            <div className="mt-5">
+              <label
+                htmlFor="message"
+                className="block mb-2 text-sm font-medium text-gray-900"
+              >
+                Description
+              </label>
+              <textarea
+                id="message"
+                rows={4}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                onChange={(e) => setDescription(e.target.value)}
+                value={description}
                 required
               />
             </div>

@@ -22,13 +22,39 @@ const createUser = async (user) => {
     const hashedPassword = await bcrypt.hash(user.password, 8);
     return new Promise((resolve, reject) => {
       pool.query(
-        "INSERT INTO Users (Email, Password, Name, PhoneNumber) VALUES (?, ?, ?, ?)",
-        [user.email, hashedPassword, user.name, user.phoneNumber],
+        "SELECT * FROM Users WHERE Email = ?",
+        [user.email],
         (err, results) => {
           if (err) {
-            reject(new Error("Error creating user: " + err.message));
+            reject(new Error("Error checking user existence: " + err.message));
+          } else if (results.length > 0) {
+            reject(new Error("User already exists"));
           } else {
-            resolve({ message: "User created successfully" });
+            pool.query(
+              "INSERT INTO Users (Email, Password, Name, PhoneNumber) VALUES (?, ?, ?, ?)",
+              [user.email, hashedPassword, user.name, user.phoneNumber],
+              (err, results) => {
+                if (err) {
+                  reject(new Error("Error creating user: " + err.message));
+                } else {
+                  pool.query(
+                    "SELECT * FROM Users WHERE Email = ?",
+                    [user.email],
+                    (err, results) => {
+                      if (err) {
+                        reject(
+                          new Error("Error retrieving user: " + err.message)
+                        );
+                      } else {
+                        const user = results[0];
+                        delete user.Password;
+                        resolve(user);
+                      }
+                    }
+                  );
+                }
+              }
+            );
           }
         }
       );

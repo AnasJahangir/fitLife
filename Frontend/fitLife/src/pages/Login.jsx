@@ -1,8 +1,17 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/images/logo.png";
+import { UserContext } from "../config/Context/UserContext";
+
 const Login = () => {
+  const { user, login } = useContext(UserContext);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  },[]);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -49,7 +58,7 @@ const Login = () => {
       });
 
       console.log("API Response:", response.data);
-
+      login(response.data);
       // Handle successful sign-in (e.g., redirect user)
     } catch (error) {
       // Handle error responses (e.g., display error message)

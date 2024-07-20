@@ -2,16 +2,21 @@ const cloudinary = require("../config/cloudinary");
 const productModel = require("../models/productModel");
 
 const createProduct = async (product, imagePath) => {
-  const result = await cloudinary.uploader.upload(imagePath, {
-    folder: "products",
-  });
+  try {
+    const result = await cloudinary.uploader.upload(imagePath, {
+      folder: "products",
+    });
 
-  const productWithImage = {
-    ...product,
-    imageUrl: result.secure_url,
-  };
+    const productWithImage = {
+      ...product,
+      imageUrl: result.secure_url,
+    };
 
-  return await productModel.createProduct(productWithImage);
+    return await productModel.createProduct(productWithImage);
+  } catch (error) {
+    console.error("Error in createProduct service:", error); // Log error details
+    throw new Error("Image upload error: " + error.message);
+  }
 };
 
 const getProducts = async (limit, offset) => {

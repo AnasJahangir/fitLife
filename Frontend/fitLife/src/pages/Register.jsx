@@ -40,7 +40,8 @@ const RegisterForm = () => {
         confirmPassword: "",
         phoneNumber: "",
       });
-      navigate("/login");
+      // navigate("/login");
+      
     } catch (error) {
       console.error("Registration failed:", error);
       // Handle error as needed (display message to user, etc.)
