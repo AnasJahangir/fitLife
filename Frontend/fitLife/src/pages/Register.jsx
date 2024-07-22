@@ -31,7 +31,7 @@ const RegisterForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`http://localhost:3000/api/register`, {
+      const response = await axios.post(`http://localhost:3000/api/user/register`, {
         email: formData.email,
         password: formData.password,
         name: formData.name,
@@ -48,6 +48,7 @@ const RegisterForm = () => {
         phoneNumber: "",
       });
       login(response.data);
+      localStorage.setItem("userdata", JSON.stringify(response.data));
       navigate("/");
     } catch (error) {
       console.error("Registration failed:", error);
@@ -59,7 +60,7 @@ const RegisterForm = () => {
     <section className="bg-gray-50 ">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto min-h-[100vh] lg:py-10">
         <Link
-          to={"/register"}
+          to={"/"}
           className="flex items-center mb-6 text-2xl font-semibold text-gray-900"
         >
           <img className="w-36 h-36 mr-2" src={Logo} alt="logo" />

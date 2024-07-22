@@ -19,16 +19,32 @@ const createProduct = async (product, imagePath) => {
   }
 };
 
-const getProducts = async (limit, offset) => {
-  return await productModel.getProducts(limit, offset);
+const getProducts = async (limit, offset, categoryId, search) => {
+  return await productModel.getProducts(limit, offset, categoryId, search);
 };
 const deleteProduct = async (productId) => {
   return await productModel.deleteProduct(productId);
 };
 
 const updateProduct = async (productId, updatedProduct) => {
-  return await productModel.updateProduct(productId, updatedProduct);
+  try {
+    // Fetch the current product details from the database
+    const currentProduct = await productModel.getProductById(productId);
+
+    // If no new image is provided, retain the existing image URL
+    if (!updatedProduct.imageUrl) {
+      updatedProduct.imageUrl = currentProduct.imageUrl;
+    }
+
+    // Pass the updated product to the model for database update
+    const result = await productModel.updateProduct(productId, updatedProduct);
+    return result;
+  } catch (error) {
+    console.error("Error in updateProduct service:", error); // Log error details
+    throw new Error("Update error: " + error.message);
+  }
 };
+
 
 module.exports = {
   createProduct,

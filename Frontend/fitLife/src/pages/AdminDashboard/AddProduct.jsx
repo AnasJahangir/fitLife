@@ -1,35 +1,48 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function AddProduct() {
-  const [productName, setProductName] = useState("");
-  const [price, setPrice] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const productToEdit = location.state?.product || {};
+
+  const [productName, setProductName] = useState(
+    productToEdit.title || ""
+  );
+  const [price, setPrice] = useState(productToEdit.price || "");
   const [createCategory, setCreateCategory] = useState("");
   const [category, setCategory] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-
-  const [featured, setFeatured] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(
+    productToEdit.category_id || ""
+  );
+  const [featured, setFeatured] = useState(productToEdit.featured || false);
   const [image, setImage] = useState(null);
-  const [addcategory, setAddcategory] = useState(true);
-  const [imagePreview, setImagePreview] = useState(null);
-  const [description, setDescription] = useState(null);
+  const [imagePreview, setImagePreview] = useState(
+    productToEdit.imageUrl || null
+  );
+  const [description, setDescription] = useState(
+    productToEdit.description || ""
+  );
+  const [showCreateCategoryInput, setShowCreateCategoryInput] = useState(false);
+
   const [error, setError] = useState("");
+
   const allCategory = async () => {
     try {
       const response = await axios.get("http://localhost:3000/api/categories");
-      console.log(response);
       setCategory(response.data);
     } catch (error) {
-      console.error("Error creating category:", error);
-      setError("Failed to create category.");
+      setError("Failed to fetch categories.");
     }
   };
+
   useEffect(() => {
     allCategory();
   }, []);
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    setImage(file);
     if (file) {
       if (!file.type.startsWith("image/")) {
         setError("Please upload an image file.");
@@ -48,70 +61,80 @@ function AddProduct() {
       reader.readAsDataURL(file);
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("AdminToken"); // Retrieve the token from localStorage or any other secure storage
+    const token = localStorage.getItem("AdminToken");
     if (!token) {
       setError("You need to be authenticated.");
       return;
     }
-    // Client-side validation
+
     if (!productName || !price || !selectedCategory || !description) {
       setError("All fields are required.");
       return;
     }
-    // Check if price is a valid number
+
     if (isNaN(price) || price <= 0) {
       setError("Price must be a positive number.");
       return;
     }
 
-    if (!image || !imagePreview) {
+    if (!image && !imagePreview) {
       setError("Image upload is required.");
       return;
     }
-    let featuredData = 0;
-    setError("");
-    if (featured) {
-      featuredData = 1;
-    } else {
-      featuredData = 0;
-    }
+
+    let featuredData = featured ? 1 : 0;
+
     const formData = new FormData();
     formData.append("productName", productName);
     formData.append("price", price);
     formData.append("category_id", selectedCategory);
-    formData.append("image", image);
+    if (image) formData.append("image", image);
     formData.append("featured", featuredData);
     formData.append("description", description);
-    console.log(productName, price, selectedCategory, image, featuredData);
+
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/products",
-        formData,
-        {
-          headers: {
-            // "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      let response;
+      if (productToEdit.id) {
+        response = await axios.put(
+          `http://localhost:3000/api/products/${productToEdit.id}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else {
+        response = await axios.post(
+          "http://localhost:3000/api/products",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
       console.log(response);
       setProductName("");
       setPrice("");
       setFeatured(false);
       setImage(null);
       setImagePreview(null);
+      setDescription("");
+      // navigate("/products"); // Redirect to products list page after successful add/edit
     } catch (error) {
-      setError("Failed to add product. Please try again.");
+      setError("Failed to save product. Please try again.");
     }
   };
 
-  const createCatogoryFunc = async () => {
-    if (addcategory) {
-      setAddcategory(false);
-    } else if (createCategory) {
-      const token = localStorage.getItem("AdminToken"); // Retrieve the token from localStorage or any other secure storage
+  const createCategoryFunc = async () => {
+    if (createCategory) {
+      const token = localStorage.getItem("AdminToken");
       if (!token) {
         setError("You need to be authenticated to create a category.");
         return;
@@ -128,15 +151,19 @@ function AddProduct() {
           }
         );
         console.log(response);
+        setCategory([...category, response.data]);
+        setCreateCategory("");
+        setShowCreateCategoryInput(false); // Hide input field after category creation
       } catch (error) {
-        console.error("Error creating category:", error);
         setError("Failed to create category.");
-      } finally {
-        setAddcategory(true);
       }
     } else {
       setError("Category name is required.");
     }
+  };
+
+  const handleCreateCategoryClick = () => {
+    setShowCreateCategoryInput((prev) => !prev);
   };
 
   return (
@@ -144,23 +171,21 @@ function AddProduct() {
       <form onSubmit={handleSubmit}>
         <div className="grid gap-6 mb-6 md:grid-cols-2">
           <div>
-            <div>
-              <label
-                htmlFor="ProductName"
-                className="block mb-2 text-sm font-medium text-gray-900 "
-              >
-                Product Name
-              </label>
-              <input
-                type="text"
-                id="ProductName"
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                placeholder="Product Name"
-                required
-              />
-            </div>
+            <label
+              htmlFor="ProductName"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Product Name
+            </label>
+            <input
+              type="text"
+              id="ProductName"
+              value={productName}
+              onChange={(e) => setProductName(e.target.value)}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+              placeholder="Product Name"
+              required
+            />
 
             <div className="mt-5">
               <label
@@ -183,7 +208,7 @@ function AddProduct() {
               <div className="mt-4">
                 <label
                   htmlFor="Price"
-                  className="block mb-2 text-sm font-medium text-gray-900 "
+                  className="block mb-2 text-sm font-medium text-gray-900"
                 >
                   Price
                 </label>
@@ -201,44 +226,53 @@ function AddProduct() {
               <div>
                 <label
                   htmlFor="Category"
-                  className="flex justify-between items-center mb-2 text-sm font-medium text-gray-900 "
+                  className="flex justify-between items-center mb-2 text-sm font-medium text-gray-900"
                 >
                   <span>Category</span>
                   <button
                     type="button"
                     className="bg-black text-white p-2 text-[11px] rounded-lg"
-                    onClick={createCatogoryFunc}
+                    onClick={handleCreateCategoryClick}
                   >
-                    {`${addcategory ? "Create" : "Add"} Category`}
+                    {showCreateCategoryInput ? "Cancel" : "Create Category"}
                   </button>
                 </label>
-                {addcategory ? (
-                  <select
-                    id="Category"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                    required
-                  >
-                    <option value="" disabled>
-                      Choose a Category
-                    </option>
-                    {category.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <input
-                    type="text"
-                    value={createCategory}
-                    onChange={(e) => setCreateCategory(e.target.value)}
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
-                    required
-                    placeholder="Enter category name"
-                  />
+
+                {showCreateCategoryInput && (
+                  <div className="flex items-center mb-4">
+                    <input
+                      type="text"
+                      value={createCategory}
+                      onChange={(e) => setCreateCategory(e.target.value)}
+                      className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                      placeholder="New Category"
+                    />
+                    <button
+                      type="button"
+                      className="bg-black text-white p-2 text-sm rounded-lg ml-2"
+                      onClick={createCategoryFunc}
+                    >
+                      Add
+                    </button>
+                  </div>
                 )}
+
+                <select
+                  id="Category"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
+                  required
+                >
+                  <option value="" disabled>
+                    Choose a Category
+                  </option>
+                  {category.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -261,7 +295,7 @@ function AddProduct() {
 
           <div>
             <label
-              className="block mb-2 text-sm font-medium text-gray-900 "
+              className="block mb-2 text-sm font-medium text-gray-900"
               htmlFor="user_avatar"
             >
               Upload image
@@ -272,7 +306,7 @@ function AddProduct() {
               id="user_avatar"
               type="file"
               onChange={handleImageUpload}
-              required
+              required={!imagePreview}
             />
             {imagePreview && (
               <img
@@ -283,12 +317,12 @@ function AddProduct() {
             )}
           </div>
         </div>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {error && <p className="text-red-500">{error}</p>}
         <button
           type="submit"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="text-white bg-black focus:ring-4 font-medium rounded-lg text-sm px-5 py-2.5"
         >
-          Submit
+          {productToEdit.id ? "Update Product" : "Add Product"}
         </button>
       </form>
     </div>

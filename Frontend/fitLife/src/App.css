@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap");
+
+body {
+  font-family: "Montserrat", sans-serif;
+}
+/* Custom Swiper navigation button styles */
+.swiper-button-prev {
+  color: #000 !important; /* Change the color of the 'previous' button */
+}
+
+.swiper-button-next {
+  color: #000 !important; /* Change the color of the 'next' button */
+}
+
+

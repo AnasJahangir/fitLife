@@ -64,8 +64,35 @@ const createUser = async (user) => {
     throw new Error("Error creating user: " + err.message);
   }
 };
+const getAllUsers = () => {
+  return new Promise((resolve, reject) => {
+    pool.query("SELECT * FROM Users", (err, results) => {
+      if (err) {
+        reject(new Error("Error retrieving users: " + err.message));
+      } else {
+        results.forEach((user) => delete user.Password); // Remove passwords from user objects
+        resolve(results);
+      }
+    });
+  });
+};
 
+const deleteUser = (userId) => {
+  return new Promise((resolve, reject) => {
+    pool.query("DELETE FROM Users WHERE UserID = ?", [userId], (err, results) => {
+      if (err) {
+        reject(new Error("Error deleting user: " + err.message));
+      } else if (results.affectedRows === 0) {
+        reject(new Error("User not found")); // If no rows are affected, user was not found
+      } else {
+        resolve({ message: "User deleted successfully" }); // Return a success message
+      }
+    });
+  });
+};
 module.exports = {
   findUserByEmail,
   createUser,
+  getAllUsers,
+  deleteUser
 };

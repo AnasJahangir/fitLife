@@ -52,13 +52,15 @@ const Login = () => {
 
     try {
       // Make API request to your backend
-      const response = await axios.post("http://localhost:3000/api/login", {
+      const response = await axios.post("http://localhost:3000/api/user/login", {
         email: formData.email,
         password: formData.password,
       });
 
       console.log("API Response:", response.data);
       login(response.data);
+      localStorage.setItem("userdata", JSON.stringify(response.data));
+      navigate("/")
       // Handle successful sign-in (e.g., redirect user)
     } catch (error) {
       // Handle error responses (e.g., display error message)
@@ -70,7 +72,7 @@ const Login = () => {
     <section className="bg-gray-50 ">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto min-h-[100vh] lg:py-10">
         <Link
-          to={"/login"}
+          to={"/"}
           className="flex items-center mb-6 text-2xl font-semibold text-gray-900 "
         >
           <img className="w-36 h-36 mr-2" src={Logo} alt="logo" />

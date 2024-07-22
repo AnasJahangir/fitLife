@@ -18,7 +18,7 @@ const createUser = async (userData) => {
 
     // Retrieve the user object after creation
     const createdUser = await userModel.findUserByEmail(userData.email);
-    const token = jwt.sign({ id: user.Id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: createdUser.Id }, process.env.JWT_SECRET);
 
     // Remove the password field from the user object
     if (createdUser) {
@@ -57,7 +57,7 @@ const loginUser = async (email, password) => {
 
 const getUser = async (email) => {
   try {
-    const existingUser = await userModel.findUserByEmail(userData.email);
+    const existingUser = await userModel.findUserByEmail(email);
     if (!existingUser) {
       throw new Error("User not exist");
     }
@@ -67,8 +67,34 @@ const getUser = async (email) => {
     throw new Error(error.message);
   }
 };
+
+const deleteUser = async (userId) => {
+  try {
+    const existingUser = await userModel.deleteUser(userId);
+    if (!existingUser) {
+      throw new Error("User not exist");
+    }
+    delete existingUser.Password;
+    return existingUser;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+const getAllUsers = async () => {
+  try {
+    const AllUser = await userModel.getAllUsers();
+    if (!AllUser) {
+      throw new Error("Users not exist");
+    }
+    return AllUser;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 module.exports = {
   createUser,
   loginUser,
   getUser,
+  getAllUsers,
+  deleteUser
 };

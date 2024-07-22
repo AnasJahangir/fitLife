@@ -9,12 +9,24 @@ import Dashboard from "../../pages/AdminDashboard/Dashboard";
 import ProtectedAdmin from "./ProtectedAdmin";
 import Products from "../../pages/AdminDashboard/Products";
 import AddProduct from "../../pages/AdminDashboard/AddProduct";
+import AboutUs from "../../pages/AboutUs";
+import Users from "../../pages/AdminDashboard/Users";
+import ContactUs from "../../pages/Contact";
 
 function MyRoutes() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingLayouts component={Home} />} />
+        <Route
+          path="/about-us"
+          element={<LandingLayouts component={AboutUs} />}
+        />
+        <Route
+          path="/contact-us"
+          element={<LandingLayouts component={ContactUs} />}
+        />
+
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} />
@@ -29,6 +41,10 @@ function MyRoutes() {
         <Route
           path="/admin/dashboard/add-product"
           element={<ProtectedAdmin component={AddProduct} />}
+        />
+        <Route
+          path="/admin/dashboard/users"
+          element={<ProtectedAdmin component={Users} />}
         />
         <Route path="*" element={<Navigate to={"/"} replace />} />
       </Routes>
