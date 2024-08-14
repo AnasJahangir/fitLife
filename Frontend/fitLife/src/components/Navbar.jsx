@@ -76,10 +76,12 @@ function Navbar() {
                   >
                     <div className="shadow-xl ">
                       {state.cart.length === 0 ? (
-                        <p className="p-2 flex bg-white hover:bg-gray-100 cursor-pointer border-b border-gray-100 text-center">No items in cart</p>
+                        <p className="p-2 flex bg-white hover:bg-gray-100 cursor-pointer border-b border-gray-100 text-center">
+                          No items in cart
+                        </p>
                       ) : (
                         <div>
-                          {state.cart.map((item,i) => (
+                          {state.cart.map((item, i) => (
                             <div
                               className="p-2 flex bg-white hover:bg-gray-100 cursor-pointer border-b border-gray-100"
                               key={i}
@@ -92,7 +94,9 @@ function Navbar() {
                                 <div className="truncate">
                                   {item.description}
                                 </div>
-                                <div className="text-gray-400">Qt: {item.quantity}</div>
+                                <div className="text-gray-400">
+                                  Qt: {item.quantity}
+                                </div>
                               </div>
                               <div className="flex flex-col w-18 font-medium items-end">
                                 <div
@@ -123,7 +127,6 @@ function Navbar() {
                           ))}
                         </div>
                       )}
-
                     </div>
                   </div>
                 </div>
@@ -243,7 +246,39 @@ function Navbar() {
                   About
                 </Link>
               </li>
-
+              <li>
+                <Link
+                  to="/shop"
+                  className={getLinkClass("/shop")}
+                  aria-current={
+                    location.pathname === "/shop" ? "page" : undefined
+                  }
+                >
+                  Shop
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/plans"
+                  className={getLinkClass("/plans")}
+                  aria-current={
+                    location.pathname === "/plans" ? "page" : undefined
+                  }
+                >
+                  Plans
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/videos"
+                  className={getLinkClass("/videos")}
+                  aria-current={
+                    location.pathname === "/videos" ? "page" : undefined
+                  }
+                >
+                  Vides
+                </Link>
+              </li>
               <li>
                 <Link
                   to="/contact-us"

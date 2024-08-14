@@ -12,6 +12,9 @@ import AddProduct from "../../pages/AdminDashboard/AddProduct";
 import AboutUs from "../../pages/AboutUs";
 import Users from "../../pages/AdminDashboard/Users";
 import ContactUs from "../../pages/Contact";
+import Shop from "../../pages/Shop";
+import Plans from "../../pages/Plans";
+import Videos from "../../pages/Videos";
 
 function MyRoutes() {
   return (
@@ -19,14 +22,23 @@ function MyRoutes() {
       <Routes>
         <Route path="/" element={<LandingLayouts component={Home} />} />
         <Route
+          path="/contact-us"
+          element={<LandingLayouts component={ContactUs} />}
+        />
+        <Route
           path="/about-us"
           element={<LandingLayouts component={AboutUs} />}
         />
         <Route
-          path="/contact-us"
-          element={<LandingLayouts component={ContactUs} />}
+          path="/plans"
+          element={<LandingLayouts component={Plans} />}
         />
-
+          <Route
+          path="/videos"
+          element={<LandingLayouts component={Videos} />}
+        />
+        <Route path="/shop" element={<LandingLayouts component={Shop} />} />
+        <Route path="/shop" element={<LandingLayouts component={Shop} />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} />
@@ -46,7 +58,7 @@ function MyRoutes() {
           path="/admin/dashboard/users"
           element={<ProtectedAdmin component={Users} />}
         />
-        <Route path="*" element={<Navigate to={"/"} replace />} />
+        {/* <Route path="*" element={<Navigate to={"/"} replace />} /> */}
       </Routes>
     </BrowserRouter>
   );
