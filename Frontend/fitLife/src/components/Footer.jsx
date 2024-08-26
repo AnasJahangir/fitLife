@@ -6,6 +6,8 @@ import {
   FaInstagram,
   FaLinkedinIn,
 } from "react-icons/fa";
+import { Link } from "react-router-dom";
+
 import logo from "../assets/images/logo.png"; // Replace with your logo path
 
 const Footer = () => {
@@ -19,30 +21,30 @@ const Footer = () => {
 
         {/* Navigation Links */}
         <div className="flex flex-col md:flex-row mb-6 md:mb-0">
-          <a
-            href="#home"
+          <Link
+            to={"/"}
             className="text-gray-300 hover:text-white mx-2 mb-2 md:mb-0"
           >
             Home
-          </a>
-          <a
-            href="#about"
+          </Link>
+          <Link
+            to={"/about-us"}
             className="text-gray-300 hover:text-white mx-2 mb-2 md:mb-0"
           >
             About Us
-          </a>
-          <a
-            href="#services"
+          </Link>
+          <Link
+            to={"/plans"}
             className="text-gray-300 hover:text-white mx-2 mb-2 md:mb-0"
           >
-            Services
-          </a>
-          <a
-            href="#contact"
+            Plans
+          </Link>
+          <Link
+           to={"/contact-us"}
             className="text-gray-300 hover:text-white mx-2 mb-2 md:mb-0"
           >
             Contact
-          </a>
+          </Link>
         </div>
 
         {/* Social Media Icons */}
@@ -83,9 +85,7 @@ const Footer = () => {
       </div>
 
       <div className="text-center mt-6 text-gray-400 text-sm">
-        <p>
-          &copy; {new Date().getFullYear()} FitLife. All rights reserved.
-        </p>
+        <p>&copy; {new Date().getFullYear()} FitLife. All rights reserved.</p>
       </div>
     </footer>
   );

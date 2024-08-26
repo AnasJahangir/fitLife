@@ -10,10 +10,16 @@ import { useCart } from "../config/Context/CartContext";
 
 export function EcommerceCard({ item }) {
   const { imageUrl, price, title, description } = item;
-  const { dispatch } = useCart();
+  const { state, dispatch } = useCart();
+  const matchedItem = state.cart.find((v) => v.id === item.id);
+
   const addToCart = (product) => {
     dispatch({ type: "ADD_TO_CART", payload: product });
   };
+  const minusToCart = (productId) => {
+    dispatch({ type: "DECREASE_QUANTITY", payload: productId });
+  };
+  console.log(matchedItem);
 
   return (
     <Card className="w-full">
@@ -41,7 +47,7 @@ export function EcommerceCard({ item }) {
           {description}
         </Typography>
       </CardBody>
-      <CardFooter className="pt-0">
+      <CardFooter className="pt-0 flex items-center">
         <Button
           ripple={false}
           fullWidth={true}
@@ -50,6 +56,19 @@ export function EcommerceCard({ item }) {
         >
           Add to Cart
         </Button>
+        <button
+          className="bg-gray-300 ms-5 me-2 w-14 h-9 text-2xl flex justify-center items-center rounded-full "
+          onClick={() => minusToCart(item.id)}
+        >
+          -
+        </button>
+        <span>{matchedItem && matchedItem.quantity}</span>
+        <button
+          className="bg-gray-300 ms-2 w-14 h-9 text-2xl flex justify-center items-center rounded-full "
+          onClick={() => addToCart(item)}
+        >
+          +
+        </button>
       </CardFooter>
     </Card>
   );

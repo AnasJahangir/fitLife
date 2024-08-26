@@ -7,7 +7,6 @@ const initialState = {
   cart: [],
 };
 
-// Reducer function to handle cart actions
 const cartReducer = (state, action) => {
   switch (action.type) {
     case "ADD_TO_CART":
@@ -35,6 +34,29 @@ const cartReducer = (state, action) => {
       );
       localStorage.setItem("cart", JSON.stringify(updatedCartRemove));
       return { ...state, cart: updatedCartRemove };
+
+    case "DECREASE_QUANTITY":
+      const productIndex = state.cart.findIndex(
+        (item) => item.id === action.payload
+      );
+
+      if (productIndex !== -1) {
+        const updatedCart = [...state.cart];
+        const currentQuantity = updatedCart[productIndex].quantity;
+
+        if (currentQuantity > 1) {
+          updatedCart[productIndex] = {
+            ...updatedCart[productIndex],
+            quantity: currentQuantity - 1,
+          };
+        } else {
+          updatedCart.splice(productIndex, 1); // Remove item if quantity is 1
+        }
+
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+        return { ...state, cart: updatedCart };
+      }
+      return state;
 
     case "LOAD_CART":
       return { ...state, cart: action.payload };
