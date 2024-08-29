@@ -13,7 +13,9 @@ const cartReducer = (state, action) => {
       const existingProductIndex = state.cart.findIndex(
         (item) => item.id === action.payload.id
       );
-
+      const existingProduct = state.cart.find(
+        (item) => item.id === action.payload.id
+      );
       if (existingProductIndex !== -1) {
         const updatedCart = [...state.cart];
         updatedCart[existingProductIndex] = {
@@ -23,7 +25,7 @@ const cartReducer = (state, action) => {
         localStorage.setItem("cart", JSON.stringify(updatedCart));
         return { ...state, cart: updatedCart };
       } else {
-        const updatedCart = [...state.cart, { ...action.payload, quantity: 1 }];
+        const updatedCart = [...state.cart, { ...action.payload }];
         localStorage.setItem("cart", JSON.stringify(updatedCart));
         return { ...state, cart: updatedCart };
       }
