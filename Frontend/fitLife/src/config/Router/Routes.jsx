@@ -15,6 +15,8 @@ import ContactUs from "../../pages/Contact";
 import Shop from "../../pages/Shop";
 import Plans from "../../pages/Plans";
 import Videos from "../../pages/Videos";
+import ProtectedRoutes from "./ProtectedRoutes";
+import Checkout from "../../pages/Checkout";
 
 function MyRoutes() {
   return (
@@ -29,19 +31,18 @@ function MyRoutes() {
           path="/about-us"
           element={<LandingLayouts component={AboutUs} />}
         />
-        <Route
-          path="/plans"
-          element={<LandingLayouts component={Plans} />}
-        />
-          <Route
-          path="/videos"
-          element={<LandingLayouts component={Videos} />}
-        />
+        <Route path="/plans" element={<LandingLayouts component={Plans} />} />
+        <Route path="/videos" element={<LandingLayouts component={Videos} />} />
         <Route path="/shop" element={<LandingLayouts component={Shop} />} />
         <Route path="/shop" element={<LandingLayouts component={Shop} />} />
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<AdminLogin />} />
+        <Route
+          path="/checkout"
+          element={<ProtectedRoutes component={Checkout} />}
+        />
+
         <Route
           path="/admin/dashboard"
           element={<ProtectedAdmin component={Dashboard} />}

@@ -63,6 +63,11 @@ const cartReducer = (state, action) => {
     case "LOAD_CART":
       return { ...state, cart: action.payload };
 
+    case "CLEAR_CART":
+      // Clear the cart and remove it from localStorage
+      localStorage.removeItem("cart");
+      return { ...state, cart: [] };
+
     default:
       return state;
   }

@@ -13,15 +13,27 @@ export function EcommerceCard({ item }) {
   const { imageUrl, price, title, description } = item;
   const { state, dispatch } = useCart();
   const matchedItem = state.cart.find((v) => v.id === item.id);
-  const [count, setCount] = useState(1);
+  const [count, setCount] = useState(matchedItem ? matchedItem.quantity : 1);
+
   const addToCart = (product) => {
-    product.quantity = count;
-    dispatch({ type: "ADD_TO_CART", payload: product });
+    dispatch({ type: "ADD_TO_CART", payload: { ...product, quantity: count } });
   };
-  const minusToCart = (productId) => {
-    dispatch({ type: "DECREASE_QUANTITY", payload: productId });
+
+  const handleIncrement = () => {
+    setCount((prevCount) => prevCount + 1);
   };
-  console.log(state.cart);
+
+  const handleDecrement = () => {
+    if (count > 1) {
+      setCount((prevCount) => prevCount - 1);
+    } else {
+      removeFromCart(item.id);
+    }
+  };
+
+  const removeFromCart = (productId) => {
+    dispatch({ type: "REMOVE_FROM_CART", payload: productId });
+  };
 
   return (
     <Card className="w-full">
@@ -55,19 +67,21 @@ export function EcommerceCard({ item }) {
           fullWidth={true}
           onClick={() => addToCart(item)}
           className="bg-black text-white shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100"
+          disabled={matchedItem && matchedItem.quantity === count}
         >
-          Add to Cart
+          {matchedItem ? "Update Cart" : "Add to Cart"}
         </Button>
         <button
-          className="bg-gray-300 ms-5 me-2 w-14 h-9 text-2xl flex justify-center items-center rounded-full "
-          onClick={() => count > 0 && setCount(count - 1)}
+          className="bg-gray-300 ms-5 me-2 w-14 h-9 text-2xl flex justify-center items-center rounded-full"
+          onClick={handleDecrement}
+          disabled={count <= 1 && !matchedItem}
         >
           -
         </button>
-        <span>{count > 0 && count}</span>
+        <span>{count}</span>
         <button
-          className="bg-gray-300 ms-2 w-14 h-9 text-2xl flex justify-center items-center rounded-full "
-          onClick={() => setCount(count + 1)}
+          className="bg-gray-300 ms-2 w-14 h-9 text-2xl flex justify-center items-center rounded-full"
+          onClick={handleIncrement}
         >
           +
         </button>

@@ -5,13 +5,15 @@ import Logo from "../assets/images/logo.png";
 import { UserContext } from "../config/Context/UserContext";
 
 const Login = () => {
-  const { user, login } = useContext(UserContext);
+  const { login } = useContext(UserContext);
   const navigate = useNavigate();
+  const userData = JSON.parse(localStorage.getItem("userdata"));
   useEffect(() => {
-    if (user) {
+    if (userData) {
       navigate("/");
     }
-  },[]);
+  });
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -52,15 +54,18 @@ const Login = () => {
 
     try {
       // Make API request to your backend
-      const response = await axios.post("http://localhost:3000/api/user/login", {
-        email: formData.email,
-        password: formData.password,
-      });
+      const response = await axios.post(
+        "http://localhost:3000/api/user/login",
+        {
+          email: formData.email,
+          password: formData.password,
+        }
+      );
 
       console.log("API Response:", response.data);
       login(response.data);
       localStorage.setItem("userdata", JSON.stringify(response.data));
-      navigate("/")
+      navigate("/");
       // Handle successful sign-in (e.g., redirect user)
     } catch (error) {
       // Handle error responses (e.g., display error message)

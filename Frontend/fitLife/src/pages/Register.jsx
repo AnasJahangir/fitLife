@@ -5,13 +5,14 @@ import Logo from "../assets/images/logo.png";
 import { UserContext } from "../config/Context/UserContext";
 
 const RegisterForm = () => {
-  const { user, login } = useContext(UserContext);
+  const {  login } = useContext(UserContext);
   const navigate = useNavigate();
+  const userData = JSON.parse(localStorage.getItem("userdata"));
   useEffect(() => {
-    if (user) {
+    if (userData) {
       navigate("/");
     }
-  }, []);
+  });
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -31,12 +32,15 @@ const RegisterForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(`http://localhost:3000/api/user/register`, {
-        email: formData.email,
-        password: formData.password,
-        name: formData.name,
-        phoneNumber: formData.phoneNumber,
-      });
+      const response = await axios.post(
+        `http://localhost:3000/api/user/register`,
+        {
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          phoneNumber: formData.phoneNumber,
+        }
+      );
 
       console.log("Registration successful:", response.data);
       // Optionally reset form fields after successful registration

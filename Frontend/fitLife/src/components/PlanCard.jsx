@@ -9,6 +9,7 @@ const PlanCard = ({ title, price, features }) => {
     price,
     title,
     description: features,
+    quantity: 1,
   };
   const { dispatch } = useCart();
   const addToCart = (product) => {

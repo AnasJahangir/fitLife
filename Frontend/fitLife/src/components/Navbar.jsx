@@ -125,6 +125,14 @@ function Navbar() {
                               </div>
                             </div>
                           ))}
+                          <div className="bg-white py-5 text-center">
+                            <Link
+                              to={"/checkout"}
+                              className="bg-black text-white p-3 rounded-md"
+                            >
+                              Checkout
+                            </Link>
+                          </div>
                         </div>
                       )}
                     </div>

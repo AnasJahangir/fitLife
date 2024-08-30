@@ -4,30 +4,32 @@ const userModel = require("../models/userModel");
 
 const createUser = async (userData) => {
   try {
+    console.log("Creating user with data:", userData);
+
     const existingUser = await userModel.findUserByEmail(userData.email);
     if (existingUser) {
       throw new Error("Email already in use");
     }
 
-    // Hash the password before creating the user
-    const hashedPassword = await bcrypt.hash(userData.password, 8);
-    const newUser = { ...userData, password: hashedPassword };
 
     // Create the user
-    await userModel.createUser(newUser);
+    await userModel.createUser(userData);
 
     // Retrieve the user object after creation
     const createdUser = await userModel.findUserByEmail(userData.email);
+    if (!createdUser) {
+      throw new Error("User could not be created");
+    }
+
     const token = jwt.sign({ id: createdUser.Id }, process.env.JWT_SECRET);
 
     // Remove the password field from the user object
-    if (createdUser) {
-      delete createdUser.Password;
-      createdUser.token = token;
-    }
+    delete createdUser.Password;
+    createdUser.token = token;
 
     return createdUser;
   } catch (err) {
+    console.error("Error in createUser:", err.message);
     throw new Error(err.message);
   }
 };
@@ -39,18 +41,21 @@ const loginUser = async (email, password) => {
       throw new Error("User not found");
     }
 
+
     const validPassword = await bcrypt.compare(password, user.Password);
+
     if (!validPassword) {
       throw new Error("Invalid password");
     }
+
     const token = jwt.sign({ id: user.Id }, process.env.JWT_SECRET);
 
-    if (user) {
-      delete user.Password;
-      user.token = token;
-    }
+    delete user.Password;
+    user.token = token;
+
     return user;
   } catch (err) {
+    console.error("Error in loginUser:", err.message);
     throw new Error(err.message);
   }
 };
@@ -96,5 +101,5 @@ module.exports = {
   loginUser,
   getUser,
   getAllUsers,
-  deleteUser
+  deleteUser,
 };

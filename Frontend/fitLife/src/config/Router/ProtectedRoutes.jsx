@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LandingLayouts from "../Layout/LandingLayouts";
 
 function ProtectedRoutes({ component: Component }) {
-  const [isUser, setIsUser] = useState(true);
   const navigate = useNavigate();
-
+  const userData = JSON.parse(localStorage.getItem("userdata"));
   useEffect(() => {
-    // here we need authentication code to access the ProtectedRoutes
-    if (!isUser) {
-      // navigate("/login");
+    if (!userData) {
+      navigate("/login");
     }
-  }, [isUser]);
+  });
 
-  return isUser && <Layout component={Component} />;
+  return <LandingLayouts component={Component} />;
 }
 
 export default ProtectedRoutes;
